@@ -1,0 +1,45 @@
+/* MARK: TYPOGRAPHY
+*/
+
+:root {
+  --font-size: clamp(1rem, 1.3cqi, 1.3rem);
+  --line-height: 1.5;
+  --letter-spacing: 0.05rem;
+
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+}
+
+a:not([class]) {
+  text-decoration-thickness: max(0.08em, 1px);
+  text-underline-offset: 0.15em;
+}
+
+:is(h1, h2, h3, h4) {
+  letter-spacing: 0.125rem;
+  text-transform: uppercase;
+  text-wrap: balance;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 4cqi, 2.5rem);
+  text-align: center;
+}
+
+h2 {
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+small {
+  font-size: 75%;
+  opacity: 0.7;
+  font-style: italic;
+  letter-spacing: 0.04rem;
+  line-height: 1.3;
+}
