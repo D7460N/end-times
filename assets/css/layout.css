@@ -1,0 +1,387 @@
+/*
+MARK: LAYOUT — Timeline of The End Times
+Built on D7460N Architecture canonical patterns:
+- Auto-grid columns: repeat(auto-fit, minmax(min(SIZE, 100%), 1fr))
+- Container queries only (no @media for sizes)
+- Single-column 7-row Holy Grail via app-container
+- Empty elements hidden via :empty / :not(:empty)
+*/
+
+:root {
+  color-scheme: light dark;
+  font-family: Oxanium, sans-serif;
+  font-size: clamp(1rem, calc(1rem + 0.4cqi), 1.25rem);
+  interpolate-size: allow-keywords;
+  scroll-behavior: smooth;
+
+  --surface-1: light-dark(oklch(80% 10% 250), oklch(10% 5% 250));
+  --surface-2: light-dark(oklch(90% 7% 250), oklch(20% 5% 250));
+  --surface-3: light-dark(oklch(100% 8% 250), oklch(30% 5% 250));
+  --text-1: light-dark(oklch(10% 5% 250), oklch(90% 5% 250));
+  --text-2: light-dark(oklch(20% 5% 250), oklch(80% 5% 250));
+  --accent: light-dark(oklch(40% 30% 250), oklch(80% 30% 250));
+  --accent-soft: light-dark(oklch(95% 5% 250), oklch(28% 8% 250));
+  --line: light-dark(oklch(70% 5% 250), oklch(40% 5% 250));
+
+  background: radial-gradient(circle in oklab,
+      var(--surface-2),
+      var(--surface-1)) fixed;
+  color: var(--text-1);
+}
+
+/* DOM order — all canonical regions display: grid */
+:where(app-container, header, main, article, section, aside, footer) {
+  display: grid;
+}
+
+/* MARK: APP-CONTAINER (7-row Holy Grail) */
+app-container {
+  min-height: 100dvh;
+  grid-template-rows: auto auto auto 1fr auto auto auto;
+  align-items: start;
+}
+
+/* MARK: HEADER / FOOTER — auto-grid */
+header,
+footer {
+  grid-template-columns: repeat(auto-fit, minmax(min(6rem, 100%), 1fr));
+  padding-block: 1rem;
+  background: color-mix(in oklab, canvas 30%, transparent);
+  border-block-end: 1px solid var(--line);
+}
+
+footer {
+  border-block-start: 1px solid var(--line);
+  border-block-end: 0;
+}
+
+app-logo,
+app-legal {
+  justify-self: start;
+  padding-inline-start: 1rem;
+  display: none;
+}
+
+app-user,
+app-version {
+  justify-self: end;
+  padding-inline-end: 1rem;
+  display: none;
+}
+
+app-logo:not(:empty),
+app-user:not(:empty),
+app-legal:not(:empty),
+app-version:not(:empty) {
+  display: block;
+}
+
+/* MARK: TOP-LEVEL NAV (architecture nav, empty for this single-page) */
+app-container > nav {
+  padding-inline: 1rem;
+}
+
+app-container > nav:empty {
+  display: none;
+}
+
+/* MARK: MAIN */
+main {
+  align-content: start;
+  overflow: hidden;
+}
+
+main > article {
+  height: 100%;
+}
+
+main section {
+  overflow: auto;
+  background-color: color-mix(in oklab, canvas 10%, transparent);
+  padding: 1rem;
+  gap: 1rem;
+  align-content: start;
+}
+
+/* h1 / p inside section */
+section > h1 {
+  text-align: center;
+  text-wrap: balance;
+}
+
+section > p {
+  text-align: center;
+  text-wrap: pretty;
+  color: var(--text-2);
+  margin-block-end: 1rem;
+}
+
+section > h1:empty,
+section > p:empty {
+  display: none;
+}
+
+/* MARK: VERTICAL SVG TOC (figure slot, populated from JSON) */
+section > figure {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding-block: 1rem;
+  color: var(--accent);
+}
+
+section > figure:empty {
+  display: none;
+}
+
+section > figure > svg {
+  inline-size: clamp(8rem, 22cqi, 14rem);
+  block-size: auto;
+}
+
+section > figure a {
+  cursor: pointer;
+  outline: 0;
+}
+
+section > figure a:hover circle:first-of-type,
+section > figure a:focus-visible circle:first-of-type {
+  fill: var(--accent-soft);
+  stroke-width: 3;
+}
+
+/* MARK: TIMELINE LIST (auto-grid pattern) */
+section > ol {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  position: relative;
+  padding-inline-start: 2.5rem;
+  padding-block: 1rem;
+  list-style: none;
+}
+
+/* timeline track */
+section > ol::before {
+  content: "";
+  position: absolute;
+  inset-block: 1.5rem;
+  inset-inline-start: 0.6875rem;
+  inline-size: 2px;
+  background: var(--line);
+  border-radius: 1px;
+}
+
+section > ol > li {
+  position: relative;
+  scroll-margin-block-start: 1rem;
+}
+
+/* timeline marker */
+section > ol > li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -2.0625rem;
+  inset-block-start: 1.375rem;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 50%;
+  background: canvas;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+section > ol > li:has(details[open])::before,
+section > ol > li:target::before {
+  background: var(--accent);
+}
+
+/* MARK: CARD (article) */
+section > ol > li > article {
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+section > ol > li > article:has(details[open]) {
+  border-color: var(--accent);
+}
+
+/* MARK: DETAILS / SUMMARY */
+section details > summary {
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  user-select: none;
+}
+
+section details > summary::-webkit-details-marker {
+  display: none;
+}
+
+section details > summary::after {
+  content: "";
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: rotate(45deg) translate(-2px, -2px);
+  opacity: 0.6;
+}
+
+section details[open] > summary::after {
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+
+section details > summary > h2 {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* details inner content (default vertical: figure stacked above quote) */
+section details::details-content {
+  block-size: 0;
+  overflow: clip;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+section details[open]::details-content {
+  block-size: auto;
+}
+
+/* MARK: BLOCKQUOTE inside details */
+section blockquote {
+  padding: 1rem 1.25rem;
+  border-inline-start: 3px solid var(--accent);
+  margin: 1.25rem;
+  background: var(--accent-soft);
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+
+section blockquote > p {
+  font-style: italic;
+  line-height: 1.65;
+}
+
+section blockquote > cite {
+  display: block;
+  margin-block-start: 0.75rem;
+  font-size: 0.8125rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+section blockquote > cite > a {
+  color: var(--text-2);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.25em;
+}
+
+section blockquote > cite > a:hover,
+section blockquote > cite > a:focus-visible {
+  color: var(--accent);
+}
+
+/* MARK: ASIDE — layout toggle state machine */
+aside {
+  padding: 1rem;
+  justify-content: center;
+}
+
+aside fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), max-content));
+  gap: 0.5rem;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface-3);
+}
+
+aside legend {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding-inline: 0.5rem;
+}
+
+aside label[role="button"] {
+  position: relative;
+  display: grid;
+  grid-template-columns: max-content;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.4375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+aside label[role="button"]:hover {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+
+aside label[role="button"]:has(input:checked) {
+  background: var(--accent);
+  color: light-dark(oklch(100% 0 0), oklch(15% 5% 250));
+}
+
+aside label[role="button"]:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* hide aria-hidden elements (D7460N global rule) */
+[aria-hidden="true"] {
+  display: none;
+}
+
+/* State machine input — visually hidden but focusable per SKILL.md pattern */
+aside label[role="button"] > input[type="checkbox"] {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+/* MARK: HORIZONTAL TOGGLE STATE — auto-grid wraps naturally; no breakpoints */
+app-container:has(aside input[type="checkbox"]:checked) section details[open]::details-content {
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+}
+
+/* MARK: LOADING (D7460N pattern — spinner shown when h1 is empty) */
+:root:has(article h1:empty)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 3rem;
+  height: 3rem;
+  margin: auto;
+  border: 0.35rem solid color-mix(in srgb, currentColor 25%, transparent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+  }
