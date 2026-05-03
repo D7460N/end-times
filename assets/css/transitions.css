@@ -1,0 +1,41 @@
+/* MARK: TRANSITIONS */
+
+:root {
+  --transition-property: display, color, opacity, visibility, background, background-color, border-color, transform, block-size, grid-template-columns;
+  --transition-timing-function: ease-in-out;
+  --transition-duration: 250ms;
+}
+
+* {
+  transition-property: var(--transition-property);
+  transition-timing-function: var(--transition-timing-function);
+  transition-duration: var(--transition-duration);
+  transition-behavior: allow-discrete;
+}
+
+/* Accessibility — reduced motion, no !important needed (same selector specificity, later in source order) */
+@media (prefers-reduced-motion) {
+  * {
+    --transition-duration: 0ms;
+  }
+}
+
+/* Smooth details expand/collapse via interpolate-size: allow-keywords (set in layout.css :root) */
+section details::details-content {
+  opacity: 0;
+}
+
+section details[open]::details-content {
+  opacity: 1;
+}
+
+/* @starting-style — initial page fade-in */
+@starting-style {
+  app-container {
+    opacity: 0;
+  }
+}
+
+app-container {
+  opacity: 1;
+}
